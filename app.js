@@ -36,6 +36,13 @@ db.once("open", function () {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.get('/', (req, res) => {
+  res
+    .status(200)
+    .send('Hello server is running')
+    .end();
+});
+
 app.get('/details', async (req, res) => {/* 
     res.send({data: 'Hello World, from express'}); */
     const user = await userModel.findOne({id: 123});
