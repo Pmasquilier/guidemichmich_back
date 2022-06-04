@@ -50,10 +50,10 @@ app.get("/details", async (req, res) => {
 });
 
 app.get("/images", async (req, res) => {
-  console.log(req.params.pays);
+  console.log(req.query.pays + '/' + req.query.ville);
   var bucketParams = {
     Bucket: "guidemichmich",
-    Prefix: req.query.pays,
+    Prefix: req.query.pays + '/' + req.query.ville,
   };
 
   s3.listObjects(bucketParams, function (err, data) {
@@ -61,35 +61,29 @@ app.get("/images", async (req, res) => {
       console.log("Error", err);
     } else {
       console.log("Success");
-      var urls = [];
+      console.log("-----------------------");
+      console.log(data);
+      console.log("-----------------------");
+      var AllUrls = [];
+      var urlsByTown = [];
+      var folderName = '';
+      // 0:{Key: 'TH/Baan Mama Compressed/Baan Mama Thailande (101).jpg', LastModified: Sat Apr 09 2022 17:06:40 GMT+0700 (heure d’Indochine), ETag: '"3fd14a2826e8438c91c82e7358393d56"', ChecksumAlgorithm: Array(0), Size: 145831, …}
+
       for (let index = 1; index < data["Contents"].length; index++) {
         url =
           "https://guidemichmich.s3.eu-west-3.amazonaws.com/" +
           data["Contents"][index]["Key"];
-        console.log(url);
-        urls.push(url);
+        urlsByTown.push(url);
       }
-      res.send(urls);
+      res.send(urlsByTown);
     }
   });
 });
-/* app.use((req, res, next) => {
-  console.log("Requête reçus");
-  next();
+
+app.get("/imageUrl", async (req, res) => {
+  res.send("https://guidemichmich.s3.eu-west-3.amazonaws.com/" + req.query.pays + '/' + req.query.ville + '/' + req.query.fileName);
 });
 
-app.use((req, res, next) => {
-  res.status(201);
-  next();
-});
-
-app.use((req, res, next) => {
-  res.json({ message: "Votre requête a bien été reçue !" });
-  next();
-});
-
-app.use((req, res, next) => {
-  console.log("Réponse envoyée avec succès !");
-}); */
+app.get("/");
 
 module.exports = app;
